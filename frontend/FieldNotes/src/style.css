@@ -1,0 +1,25 @@
+*{
+    margin: 0;
+    padding:0;
+    box-sizing: border-box;
+}
+
+:root {
+    --color-bg: #f5f3ef;          
+    --color-surface: #ffffff;     
+    --color-primary: #3f5f3f;     
+    --color-primary-hover: #2f4a2f;
+    --color-text: #2c2c2c;        
+    --color-text-light: #6b6b6b;  
+    --color-border: #e0e0e0;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+h1, h2 {
+    font-family: 'Playfair Display', serif;
+}
