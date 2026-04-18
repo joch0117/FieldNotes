@@ -1,6 +1,6 @@
 <template>
     <header class="site-header">
-    <router-link to="/" class="logo">
+    <router-link :to="{ name: 'home' }" class="logo">
         <BookOpen :size="22" />
         <span>FieldNotes</span>
     </router-link>

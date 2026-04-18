@@ -1,5 +1,5 @@
 <template>
-    <footer style="footer-site">
+    <footer class="footer-site">
         <p>© 2026 FieldNotes. A personal note tracking application.</p>
     </footer>
 </template>

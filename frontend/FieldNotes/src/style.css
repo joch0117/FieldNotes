@@ -23,3 +23,8 @@ body {
 h1, h2 {
     font-family: 'Playfair Display', serif;
 }
+
+.main{
+    display: flex;
+    align-items: center;
+}
