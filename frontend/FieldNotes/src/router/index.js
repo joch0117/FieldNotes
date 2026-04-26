@@ -4,6 +4,7 @@ import HomePage from '../pages/HomePage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import RegisterPage from '../pages/RegisterPage.vue'
 import DashboardPage from '../pages/DashboardPage.vue'
+import CreateNotePage from '../pages/CreateNotePage.vue'
 
 const routes = [
     {
@@ -25,6 +26,11 @@ const routes = [
         path:'/dashboard',
         name:'dashboard',
         component:DashboardPage
+    },
+    {
+        path:'/newNote',
+        name:'newNote',
+        component:CreateNotePage
     }
 ]
 

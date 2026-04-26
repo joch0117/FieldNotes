@@ -6,7 +6,7 @@
     </div>
     <h3>Se connecter</h3>
     <p>Connectez-vous pour accéder à vos notes.</p>
-    <form class="login-form" @submit.prevent>
+    <form class="login-form" @submit.prevent="handleLogin">
         <BaseInput
         label="Email"
         id="email"
@@ -21,7 +21,12 @@
         type="password"
         v-model="password" 
         />
+        <p v-if="error" class="form-message error">{{  error }}</p>
         <BaseButton label="se connecter" type="submit" />
+        <p class="auth-switch">
+        Pas encore de compte ?
+        <RouterLink to="/register">Inscrivez-vous</RouterLink>
+</p>
     </form>
     </div>
 </section>
@@ -73,6 +78,20 @@ p {
     flex-direction: column;
     gap: 1rem;
 }
+.auth-switch {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.auth-switch a {
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.auth-switch a:hover {
+    text-decoration: underline;
+}
 </style>
 <script setup>
     import { LogInIcon } from 'lucide-vue-next'
@@ -80,7 +99,27 @@ p {
     import BaseInput from '../components/BaseInput.vue'
 
     import {ref} from 'vue'
+    import { useRouter } from 'vue-router'
+    
+    const router =  useRouter()
 
+    const error = ref('')
     const email = ref('')
     const password = ref('')
+
+    function handleLogin(){
+        console.log('submit ok')
+        error.value = ''
+
+        if (!email.value || !password.value){
+            error.value = "Tous les champs sont obligatoires"
+            return
+        }
+
+        if (email.value === 'test@test.com' && password.value === '1234'){
+            router.push('/dashboard')
+        }else{
+            error.value='Email ou mot de passe incorrect'
+        }
+    }
 </script>

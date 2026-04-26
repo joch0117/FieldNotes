@@ -1,6 +1,6 @@
 <template>
     <div class="hero-actions">
-        <button class="btn btn-primary">C'est parti !</button>
+        <router-link :to="{ name:'register'}" class="btn btn-primary">C'est parti !</router-link>
         <router-link :to="{ name:'login'}" class="btn btn-secondary">Se connecter</router-link>
     </div>
 </template>
