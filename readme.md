@@ -36,3 +36,13 @@ Ce projet a pour objectif de mettre en pratique les fondamentaux du développeme
 - back
 - front
 
+## Page du site 
+
+- Acceuil
+- register
+- login
+- dashboard
+- nouvelle note
+- edit note
+- detail note
+- CGU
