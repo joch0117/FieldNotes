@@ -1,6 +1,5 @@
-const db = require('../database/db')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+const userService = require('../services/userService')
+
 
 const register = async (req, res)=>{
     try{
@@ -24,29 +23,20 @@ const register = async (req, res)=>{
     })
     }
     
-    const [existingUsers] =  await db.query(
-        'SELECT id FROM users WHERE email = ?',
-        [email]
-    )
+    await userService.registerUser(username, email, password)
 
-    if (existingUsers.length > 0){
-        return res.status(409).json({
-            message: 'Cet email est déjà utilisé'
-        })
-    }
 
-    const hashedPassword = await bcrypt.hash(password,10)
-
-    await db.query(
-        'INSERT INTO users (username, email, password_hash) VALUES (?,?,?)',
-        [username, email, hashedPassword]
-    )
-    res.status(201).json({
+    return res.status(201).json({
         message: 'Utilisateur créé avec succès.'
     })
 
     }catch (error){
-        res.status(500).json({
+        if(error.message === 'EMAIL_ALREADY_EXISTS'){
+            return res.status(409).json({
+                message: 'Cet email est déjà utilisé'
+            })
+        }
+        return res.status(500).json({
             message: 'Erreur serveur'
         })
     }
@@ -73,51 +63,23 @@ const login = async (req, res)=>{
     })
     }
     
-    const [users] =  await db.query(
-        'SELECT id, username, email, password_hash FROM users WHERE email = ?',
-        [email]
-    )
-
-    if (users.length === 0){
-        return res.status(401).json({
-            message: 'Email ou mot de passe incorrect.'
-        })
-    }
-
-    const user = users[0]
-
-    const isPasswordValid = await bcrypt.compare(password, user.password_hash)
-
-    if(!isPasswordValid){
-        return res.status(401).json({
-            message:'Email ou mot de passe incorrect.'
-        })
-    }
-    const token = jwt.sign(
-        {
-            id:user.id,
-            email: user.email
-        },
-        process.env.JWT_SECRET,
-        {
-            expiresIn:process.env.JWT_EXPIRES_IN
-        }
-    )
+    const result = await userService.loginUser(email, password)
 
     return res.status(200).json({
         message: 'Connexion réussie',
-        token,
-        user:{
-            id:user.id,
-            username:user.username,
-            email: user.email
-        }
+        token: result.token,
+        user: result.user
     })
 
 
     }catch(error){
-        res.status(500).json({
-            message: 'erreur serveur'
+        if(error.message === 'INVALID_CREDENTIALS'){
+            return res.status(401).json({
+                message: 'email ou mot de passe incorrect.'
+            })
+        }
+        return res.status(500).json({
+            message: 'Erreur serveur'
         })
     }
 }
