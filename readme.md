@@ -46,3 +46,16 @@ Ce projet a pour objectif de mettre en pratique les fondamentaux du développeme
 - edit note
 - detail note
 - CGU
+
+## Route de l'API (documentation compléte dans  /backend/readme.md)
+
+# USER
+- api/auth/register  **enregistrement d'un nouvelle utilisateur**
+- api/auth/login **connexion utilisateur génération token JWT**
+
+# observations route protégé par JWT
+
+- get api/observations/ **récupére les observations de l'utilisateur  authentifié**
+- post api/observations/create **créer une nouvelle observation**
+- delete api/observations/:id **suprime une observation**
+- patch api/observations/:id **modifie une observation**
