@@ -6,7 +6,7 @@
     </div>
     <h3>S'inscrire</h3>
     <p>Commencez votre journée avec FieldNotes</p>
-    <form class="register-form" @submit.prevent>
+    <form class="register-form" @submit.prevent="handleRegister">
         <BaseInput
         label="Nom"
         id="name"
@@ -28,6 +28,8 @@
         type="password"
         v-model="password" 
         />
+        <FormMessage :message="errorMessage" type="error" />
+        <FormMessage :message="successMessage" type="success" />
         <BaseButton label="s'enregistrer" type="submit" />
         <p class="auth-switch">
         Déjà inscrit ?
@@ -38,15 +40,38 @@
 </section>
 </template>
 <script setup>
+    import FormMessage from '../components/FormMessage.vue'
     import { UserRoundPlus } from 'lucide-vue-next'
     import BaseButton from '../components/BaseButton.vue'
     import BaseInput from '../components/BaseInput.vue'
-
+    import { registerUser } from '../services/auth'
     import {ref} from 'vue'
-
+    import { useRouter } from 'vue-router'
+    
+    const router = useRouter()
     const email = ref('')
     const password = ref('')
     const name = ref('')
+    const errorMessage = ref('')
+    const successMessage = ref('')
+
+
+    const handleRegister = async () =>{
+        try{
+            await registerUser(
+                {
+                    username: name.value,
+                    email: email.value,
+                    password: password.value
+                }
+            )
+            successMessage.value = 'Compte créé avec succès.'
+            
+            router.push('/login')
+        }catch(error){
+            errorMessage.value = error.message
+        }
+    }
 </script>
 <style scoped>
     .register-page {
@@ -109,4 +134,5 @@ p {
 .auth-switch a:hover {
     text-decoration: underline;
 }
+
 </style>

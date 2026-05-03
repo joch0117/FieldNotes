@@ -21,7 +21,8 @@
         type="password"
         v-model="password" 
         />
-        <p v-if="error" class="form-message error">{{  error }}</p>
+        <FormMessage :message="errorMessage" type="error" />
+        <FormMessage :message="successMessage" type="success" />
         <BaseButton label="se connecter" type="submit" />
         <p class="auth-switch">
         Pas encore de compte ?
@@ -97,29 +98,37 @@ p {
     import { LogInIcon } from 'lucide-vue-next'
     import BaseButton from '../components/BaseButton.vue'
     import BaseInput from '../components/BaseInput.vue'
-
+    import FormMessage from '../components/FormMessage.vue'
+    import { loginUser } from '../services/auth'
     import {ref} from 'vue'
     import { useRouter } from 'vue-router'
     
     const router =  useRouter()
 
-    const error = ref('')
+    const errorMessage = ref('')
+    const successMessage = ref('')
     const email = ref('')
     const password = ref('')
 
-    function handleLogin(){
-        console.log('submit ok')
-        error.value = ''
-
+    const handleLogin = async()=>{
+        
         if (!email.value || !password.value){
             error.value = "Tous les champs sont obligatoires"
             return
         }
-
-        if (email.value === 'test@test.com' && password.value === '1234'){
+        
+        try{
+            await loginUser(
+                {
+                    email: email.value,
+                    password: password.value
+                }
+            )
+            successMessage.value = "connexion réussie"
             router.push('/dashboard')
-        }else{
-            error.value='Email ou mot de passe incorrect'
+        }catch(error){
+            console.log(error)
+            errorMessage.value = error.message
         }
     }
 </script>
