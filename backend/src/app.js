@@ -13,9 +13,6 @@ app.use(cors({
 
 app.use(express.json())
 
-app.get('/api/health',(req, res)=>{
-    res.json({message:'API FieldNotes ok'})
-})
 
 app.use('/api/auth',authRoutes)
 app.use('/api/observations', observationRoutes)
