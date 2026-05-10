@@ -2,12 +2,12 @@
 
 Frontend Vue 3 de FieldNotes.
 
-## État actuel
+## Objectif
 
-Le frontend est connecté au backend pour :
-- auth (`register`, `login`)
-- notes (`GET`, `POST`, `PATCH`, `DELETE`)
-- compte (`PATCH /auth/me`, `DELETE /auth/me`)
+Fournir une interface complète pour :
+- authentification utilisateur
+- gestion des notes
+- gestion du compte
 
 ## Stack
 
@@ -22,6 +22,14 @@ Le frontend est connecté au backend pour :
 npm install
 npm run dev
 npm run build
+```
+
+## Configuration
+
+Créer un fichier `.env` dans `frontend/FieldNotes` :
+
+```env
+VITE_API_URL=http://localhost:3000/api
 ```
 
 ## Routes UI
@@ -42,26 +50,15 @@ npm run build
 - `src/components` : composants UI
 - `src/services/userService.js` : appels API auth + compte
 - `src/services/observationService.js` : appels API observations
-- `src/stores/sessionStore.js` : session front + token/user
-- `src/stores/notesStore.js` : cache notes côté front
+- `src/stores/sessionStore.js` : état session (token + user)
+- `src/stores/notesStore.js` : état notes côté UI
 
 ## Sécurité et erreurs
 
-- Guards de route front: `requiresAuth` et `guestOnly`
-- Token JWT stocké et relu au démarrage
-- Sur `401`, déconnexion automatique + message "Session expirée"
-- Parsing JSON sécurisé des réponses API
-- Affichage distinct erreurs/succès dans les formulaires
+- Guards `requiresAuth` et `guestOnly`
+- Réhydratation session au démarrage
+- Déconnexion automatique sur `401`
+- Parsing JSON défensif côté services
+- Affichage clair des erreurs/succès dans les formulaires
 
-## Configuration
 
-Définir `VITE_API_URL` (exemple):
-
-```env
-VITE_API_URL=http://localhost:3000/api
-```
-
-## Publication GitHub
-
-- Ne pas commiter `.env`.
-- Vérifier que `VITE_API_URL` n'est pas une URL de production sensible.

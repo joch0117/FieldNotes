@@ -1,44 +1,35 @@
 ﻿# FieldNotes
 
-FieldNotes est une application full-stack de notes personnelles (Vue 3 + Express + MariaDB).
+Application full-stack de notes personnelles (Vue 3 + Express + MariaDB).
 
-## État actuel
+## Aperçu
 
-L'application est branchée au backend pour :
-- authentification (`register`, `login`)
-- observations (`liste`, `création`, `édition`, `suppression`)
-- compte utilisateur (`modification`, `suppression`)
+FieldNotes permet à un utilisateur de :
+- créer un compte et se connecter
+- créer, lire, modifier et supprimer ses notes
+- modifier ou supprimer son compte
 
 ## Stack
 
-### Frontend
-- Vue 3
-- Vue Router
-- Vite
-- CSS
+- Frontend : Vue 3, Vue Router, Vite, CSS
+- Backend : Node.js, Express, MariaDB, JWT
 
-### Backend
-- Node.js
-- Express
-- MariaDB
-- JWT (auth)
+## Fonctionnalités livrées
 
-## Fonctionnalités principales
-
-- Inscription et connexion utilisateur
-- Dashboard avec recherche + filtres
-- CRUD notes
-- Détail note avec suppression confirmée inline
-- Compte utilisateur : modifier / supprimer
+- Authentification : `register`, `login`
+- Notes : `GET`, `POST`, `PATCH`, `DELETE`
+- Compte : `PATCH /auth/me`, `DELETE /auth/me`
+- Dashboard avec recherche et filtres
+- Routes privées côté front (guards)
 - Page CGU
 
-## Sécurité et gestion d'erreurs
+## Sécurité
 
-- Routes backend sensibles protégées par JWT
-- Guard frontend (`requiresAuth`, `guestOnly`)
-- Déconnexion automatique frontend sur réponse `401`
-- Messages d'erreur API affichés côté interface
-- Validation serveur des champs (auth + observations + compte)
+- API protégée par JWT sur routes privées
+- Contrôle strict du header `Authorization: Bearer <token>`
+- Déconnexion automatique front sur `401`
+- Validation serveur des entrées (auth, compte, observations)
+- Rate limiting sur routes d'auth
 
 ## Arborescence
 
@@ -46,30 +37,35 @@ L'application est branchée au backend pour :
 - `backend` : API Express
 - `database` : scripts SQL
 - `documentation` : documents projet
-- `figma` : inspirations UI
+- `figma` : inspirations visuelles
 
-## Lancement rapide
+## Installation et lancement
 
-### Frontend
-```bash
-cd frontend/FieldNotes
-npm install
-npm run dev
-```
+### 1) Configuration
 
-### Backend
+Créer `.env` à partir de `.env.exemple`.
+
+### 2) Backend
+
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-## Configuration
+### 3) Frontend
 
-- Créer votre fichier `.env` à partir de `.env.exemple`.
-- Ne jamais versionner de secrets (`.env` est déjà ignoré par Git).
+```bash
+cd frontend/FieldNotes
+npm install
+npm run dev
+```
 
-## API backend (résumé)
+## Variables d'environnement
+
+Voir `.env.exemple` à la racine pour la base de données, JWT, port API et URL frontend.
+
+## API (résumé)
 
 ### Auth
 - `POST /api/auth/register`
@@ -82,3 +78,7 @@ npm run dev
 - `POST /api/observations/create`
 - `PATCH /api/observations/:id`
 - `DELETE /api/observations/:id`
+
+## Statut
+
+Projet finalisé
