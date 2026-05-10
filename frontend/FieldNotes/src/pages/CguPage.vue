@@ -9,19 +9,28 @@
 
       <div class="legal-content">
         <h2>1. Objet</h2>
-        <p>Les présentes conditions définissent les modalités d'utilisation de l'application FieldNotes.</p>
+        <p>Les présentes conditions définissent les règles d'utilisation de l'application FieldNotes, accessible en version web.</p>
 
-        <h2>2. Utilisation du service</h2>
-        <p>L'utilisateur s'engage à utiliser l'application de manière responsable et conforme à la réglementation en vigueur.</p>
+        <h2>2. Compte utilisateur</h2>
+        <p>L'accès aux fonctionnalités de gestion de notes nécessite la création d'un compte et une authentification. L'utilisateur est responsable de la confidentialité de ses identifiants.</p>
 
-        <h2>3. Données</h2>
-        <p>Les notes affichées dans cette version sont locales au front-end tant que la connexion backend n'est pas activée.</p>
+        <h2>3. Données et contenu</h2>
+        <p>L'utilisateur reste propriétaire des contenus qu'il crée (notes, catégories, textes). Il s'engage à ne pas publier de contenu illicite, diffamatoire ou portant atteinte aux droits de tiers.</p>
 
-        <h2>4. Responsabilité</h2>
-        <p>FieldNotes est fourni en l'état. L'éditeur ne pourra être tenu responsable d'une perte de données liée à un usage non conforme.</p>
+        <h2>4. Sécurité</h2>
+        <p>Les routes sensibles sont protégées par authentification JWT. Malgré les mesures de sécurité mises en place, l'utilisateur reconnaît qu'aucun système n'est totalement exempt de risques.</p>
 
-        <h2>5. Évolution</h2>
-        <p>Ces conditions peuvent être modifiées. La date de mise à jour en haut de page fait foi.</p>
+        <h2>5. Modification et suppression du compte</h2>
+        <p>L'utilisateur peut modifier ses informations et demander la suppression de son compte depuis l'interface dédiée. La suppression entraîne également la suppression des notes associées.</p>
+
+        <h2>6. Disponibilité du service</h2>
+        <p>FieldNotes est fourni « en l'état ». L'éditeur ne garantit pas une disponibilité continue du service et peut suspendre temporairement l'accès pour maintenance ou évolution.</p>
+
+        <h2>7. Limitation de responsabilité</h2>
+        <p>L'éditeur ne saurait être tenu responsable des pertes de données, interruptions de service ou dommages indirects liés à l'usage de l'application.</p>
+
+        <h2>8. Évolution des CGU</h2>
+        <p>Les présentes CGU peuvent être modifiées à tout moment. La date indiquée en haut de page correspond à la version en vigueur.</p>
       </div>
     </article>
   </section>

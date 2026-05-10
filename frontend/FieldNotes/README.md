@@ -2,10 +2,12 @@
 
 Frontend Vue 3 de FieldNotes.
 
-## Objectif actuel
+## État actuel
 
-Cette version est une refonte UI/UX complète en mode local, prête à être connectée au backend.
-La logique métier backend (auth/API) n'est pas encore branchée dans cette couche.
+Le frontend est connecté au backend pour :
+- auth (`register`, `login`)
+- notes (`GET`, `POST`, `PATCH`, `DELETE`)
+- compte (`PATCH /auth/me`, `DELETE /auth/me`)
 
 ## Stack
 
@@ -14,41 +16,52 @@ La logique métier backend (auth/API) n'est pas encore branchée dans cette couc
 - Vite
 - CSS
 
-## Lancer le projet
+## Scripts
 
 ```bash
 npm install
 npm run dev
-```
-
-## Build production
-
-```bash
 npm run build
 ```
 
-## Pages disponibles
+## Routes UI
 
 - `/` : Accueil
 - `/login` : Connexion
 - `/register` : Inscription
-- `/dashboard` : Dashboard notes
-- `/notes/new` : Nouvelle note
-- `/notes/:id` : Détail note
-- `/notes/:id/edit` : Modifier note
-- `/account` : Modifier mon compte
+- `/dashboard` : Dashboard notes (privé)
+- `/notes/new` : Nouvelle note (privé)
+- `/notes/:id` : Détail note (privé)
+- `/notes/:id/edit` : Modifier note (privé)
+- `/account` : Modifier mon compte (privé)
 - `/cgu` : Conditions générales d'utilisation
 
-## Architecture front
+## Architecture
 
 - `src/pages` : pages applicatives
-- `src/components` : composants UI réutilisables
-- `src/stores/notesStore.js` : notes mock (CRUD local)
-- `src/stores/sessionStore.js` : état session front (en mémoire)
-- `src/data/mockNotes.js` : dataset local initial
+- `src/components` : composants UI
+- `src/services/userService.js` : appels API auth + compte
+- `src/services/observationService.js` : appels API observations
+- `src/stores/sessionStore.js` : session front + token/user
+- `src/stores/notesStore.js` : cache notes côté front
 
-## Notes importantes
+## Sécurité et erreurs
 
-- Données notes : locales au frontend (pas d'appel API).
-- Session utilisateur : locale en mémoire (pas de token backend).
-- Ce mode simplifié est volontaire pour préparer le branchement backend.
+- Guards de route front: `requiresAuth` et `guestOnly`
+- Token JWT stocké et relu au démarrage
+- Sur `401`, déconnexion automatique + message "Session expirée"
+- Parsing JSON sécurisé des réponses API
+- Affichage distinct erreurs/succès dans les formulaires
+
+## Configuration
+
+Définir `VITE_API_URL` (exemple):
+
+```env
+VITE_API_URL=http://localhost:3000/api
+```
+
+## Publication GitHub
+
+- Ne pas commiter `.env`.
+- Vérifier que `VITE_API_URL` n'est pas une URL de production sensible.

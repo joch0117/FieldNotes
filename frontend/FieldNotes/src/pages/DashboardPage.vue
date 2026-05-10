@@ -9,6 +9,7 @@
     </header>
 
     <SearchBar v-model="searchTerm" placeholder="Rechercher une note..." />
+    <p v-if="errorMessage" class="status-message">{{ errorMessage }}</p>
 
     <div class="filter-list">
       <button
@@ -37,14 +38,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
-import { notesState } from '../stores/notesStore'
+import { computed, onMounted, ref } from 'vue'
+import { setNotes, notesState } from '../stores/notesStore'
+import { getObservations } from '../services/observationService'
 import BaseButton from '../components/BaseButton.vue'
 import NoteCard from '../components/NoteCard.vue'
 import SearchBar from '../components/SearchBar.vue'
 
 const searchTerm = ref('')
 const selectedCategory = ref('Toutes')
+const errorMessage = ref('')
 
 const categories = computed(() => ['Toutes', ...new Set(notesState.notes.map((note) => note.category))])
 
@@ -56,6 +59,16 @@ const filteredNotes = computed(() => {
     const byText = !term || note.title.toLowerCase().includes(term) || note.content.toLowerCase().includes(term)
     return byCategory && byText
   })
+})
+
+onMounted(async () => {
+  try {
+    const observations = await getObservations()
+    setNotes(observations)
+    errorMessage.value = ''
+  } catch (error) {
+    errorMessage.value = error.message
+  }
 })
 </script>
 
@@ -74,6 +87,10 @@ const filteredNotes = computed(() => {
 
 .dashboard-head p {
   color: var(--text-soft);
+}
+
+.status-message {
+  color: #8a2f2f;
 }
 
 .filter-list {

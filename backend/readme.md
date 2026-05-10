@@ -12,53 +12,69 @@ npm run dev
 
 Le serveur écoute sur `http://localhost:3000` (ou la valeur de `PORT`).
 
-## Structure
+## Architecture
 
-- `server.js` : point d'entrée serveur
-- `src/app.js` : configuration Express (CORS + JSON + routes)
-- `src/routes` : routes HTTP
-- `src/controllers` : gestion req/res
-- `src/services` : logique métier
-- `src/repositories` : accès base de données
-- `src/middlewares` : middleware JWT
+- `server.js` : lancement serveur
+- `src/app.js` : middleware + routes
+- `src/routes` : définitions endpoints
+- `src/controllers` : gestion HTTP
+- `src/services` : logique métier et validations
+- `src/repositories` : accès MariaDB
+- `src/middlewares/auth.middlewares.js` : vérification JWT
 
-## Base path API
+## Sécurité et validations
 
-- Auth : `/api/auth`
-- Observations : `/api/observations`
+- Vérification stricte du header `Authorization: Bearer <token>`
+- JWT obligatoire sur routes protégées
+- Validation des champs auth/compte/observations
+- Gestion des erreurs métier avec statuts HTTP adaptés
+- Suppression utilisateur en cascade via FK (`observations.user_id`)
+- CORS limité à `http://localhost:5173` par défaut (à adapter en production)
 
-## Routes disponibles
+## Base path
+
+- Auth: `/api/auth`
+- Observations: `/api/observations`
+
+## Routes
 
 ### Auth
 
 1. `POST /api/auth/register`
 - Body: `username`, `email`, `password`
-- Réponses principales: `201`, `400`, `409`, `500`
+- Statuts: `201`, `400`, `409`, `500`
 
 2. `POST /api/auth/login`
 - Body: `email`, `password`
-- Réponses principales: `200`, `400`, `401`, `500`
+- Statuts: `200`, `400`, `401`, `500`
 
-### Observations (protégées par JWT)
+3. `PATCH /api/auth/me` (JWT)
+- Body: `username`, `email`, `password` (optionnel)
+- Statuts: `200`, `400`, `401`, `404`, `409`, `500`
+
+4. `DELETE /api/auth/me` (JWT)
+- Statuts: `200`, `401`, `404`, `500`
+
+### Observations (JWT)
 
 Headers requis:
 - `Authorization: Bearer <token>`
 
 1. `GET /api/observations/`
-- Retourne les observations de l'utilisateur connecté
-- Réponses principales: `200`, `400`, `401`, `500`
+- Statuts: `200`, `400`, `401`, `500`
 
 2. `POST /api/observations/create`
 - Body: `title`, `category`, `content`
-- Réponses principales: `201`, `400`, `401`, `500`
+- Statuts: `201`, `400`, `401`, `500`
 
 3. `PATCH /api/observations/:id`
 - Body: `title`, `category`, `content`
-- Réponses principales: `200`, `400`, `401`, `500`
+- Statuts: `200`, `400`, `401`, `500`
 
 4. `DELETE /api/observations/:id`
-- Réponses principales: `200`, `401`, `500`
+- Statuts: `200`, `401`, `500`
 
-## Remarque
+## Configuration
 
-La route `GET /api/auth/me` n'est pas implémentée dans l'état actuel du backend.
+Configurer les variables d'environnement (`DB_*`, `JWT_SECRET`, `JWT_EXPIRES_IN`, `PORT`) dans `.env`.
+Ne jamais commiter de secrets en clair.

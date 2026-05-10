@@ -1,11 +1,14 @@
 import { reactive } from 'vue'
-import { mockNotes } from '../data/mockNotes'
 
 export const notesState = reactive({
-  notes: [...mockNotes]
+  notes: []
 })
 
 export const findNoteById = (id) => notesState.notes.find((note) => note.id === Number(id))
+
+export const setNotes = (notes) => {
+  notesState.notes = notes
+}
 
 export const updateNote = (id, payload) => {
   const index = notesState.notes.findIndex((note) => note.id === Number(id))

@@ -16,6 +16,7 @@
         </RouterLink>
         <BaseButton label="Supprimer" variant="secondary" @click="showDeleteConfirm = true" />
       </div>
+      <p v-if="errorMessage" class="status-message">{{ errorMessage }}</p>
 
       <div v-if="showDeleteConfirm" class="confirm-delete">
         <p>Confirmer la suppression de cette note ? Cette action est irréversible.</p>
@@ -26,8 +27,8 @@
       </div>
 
       <footer>
-        <span>Lieu: {{ note.location }}</span>
-        <span>Étiquettes: {{ note.tags.join(', ') }}</span>
+        <span>Lieu: {{ note.location || 'Non précisé' }}</span>
+        <span>Étiquettes: {{ (note.tags && note.tags.length) ? note.tags.join(', ') : 'Aucune' }}</span>
       </footer>
     </article>
   </section>
@@ -39,14 +40,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseButton from '../components/BaseButton.vue'
-import { deleteNote, findNoteById } from '../stores/notesStore'
+import { deleteNote, findNoteById, setNotes } from '../stores/notesStore'
+import { deleteObservation, getObservations } from '../services/observationService'
 
 const route = useRoute()
 const router = useRouter()
 const showDeleteConfirm = ref(false)
+const errorMessage = ref('')
 
 const note = computed(() => {
   return findNoteById(route.params.id)
@@ -54,10 +57,28 @@ const note = computed(() => {
 
 const formatDate = (date) => new Date(date).toLocaleDateString('fr-FR')
 
-const handleDelete = () => {
+onMounted(async () => {
+  if (note.value) return
+
+  try {
+    const observations = await getObservations()
+    setNotes(observations)
+  } catch (error) {
+    errorMessage.value = error.message
+  }
+})
+
+const handleDelete = async () => {
   if (!note.value) return
-  deleteNote(note.value.id)
-  router.push('/dashboard')
+
+  try {
+    await deleteObservation(note.value.id)
+    deleteNote(note.value.id)
+    router.push('/dashboard')
+  } catch (error) {
+    errorMessage.value = error.message
+    showDeleteConfirm.value = false
+  }
 }
 </script>
 
@@ -113,6 +134,10 @@ footer {
   display: flex;
   gap: 0.75rem;
   flex-wrap: wrap;
+}
+
+.status-message {
+  color: #8a2f2f;
 }
 </style>
 

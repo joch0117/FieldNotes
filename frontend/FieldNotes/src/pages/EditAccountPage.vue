@@ -13,7 +13,8 @@
         <BaseInput id="password" v-model="password" label="Nouveau mot de passe" type="password" />
       </div>
 
-      <FormMessage :message="message" type="success" />
+      <FormMessage :message="errorMessage" type="error" />
+      <FormMessage :message="successMessage" type="success" />
 
       <div class="actions">
         <RouterLink to="/dashboard" class="back-link">Annuler</RouterLink>
@@ -27,7 +28,7 @@
         <div v-if="showDeleteConfirm" class="confirm-delete">
           <p>Confirmer la suppression du compte ?</p>
           <div class="confirm-actions">
-            <BaseButton label="Oui, supprimer mon compte" @click="deleteAccount" />
+            <BaseButton label="Oui, supprimer mon compte" @click="handleDeleteAccount" />
             <BaseButton label="Annuler" variant="secondary" @click="showDeleteConfirm = false" />
           </div>
         </div>
@@ -44,25 +45,50 @@ import { useRouter } from 'vue-router'
 import BaseButton from '../components/BaseButton.vue'
 import BaseInput from '../components/BaseInput.vue'
 import FormMessage from '../components/FormMessage.vue'
+import { deleteAccount, updateAccount } from '../services/userService'
 import { logoutSession, resetProfile, sessionState, updateProfile } from '../stores/sessionStore'
 
 const router = useRouter()
-const username = ref(sessionState.profile.username)
-const email = ref(sessionState.profile.email)
+const username = ref(sessionState.user?.username ?? '')
+const email = ref(sessionState.user?.email ?? '')
 const password = ref('')
-const message = ref('')
+const errorMessage = ref('')
+const successMessage = ref('')
 const showDeleteConfirm = ref(false)
 
-const saveAccount = () => {
-  updateProfile({ username: username.value, email: email.value })
-  message.value = 'Informations mises à jour localement.'
-  password.value = ''
+const saveAccount = async () => {
+  try {
+    const result = await updateAccount({
+      username: username.value,
+      email: email.value,
+      password: password.value
+    })
+
+    updateProfile({
+      username: result.user?.username ?? username.value,
+      email: result.user?.email ?? email.value
+    })
+
+    password.value = ''
+    errorMessage.value = ''
+    successMessage.value = result.message || 'Compte mis à jour.'
+  } catch (error) {
+    successMessage.value = ''
+    errorMessage.value = error.message
+  }
 }
 
-const deleteAccount = () => {
-  logoutSession()
-  resetProfile()
-  router.push('/')
+const handleDeleteAccount = async () => {
+  try {
+    await deleteAccount()
+    logoutSession()
+    resetProfile()
+    router.push('/')
+  } catch (error) {
+    showDeleteConfirm.value = false
+    successMessage.value = ''
+    errorMessage.value = error.message
+  }
 }
 </script>
 

@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken')
+﻿const jwt = require('jsonwebtoken')
 
 const authMiddleware = (req,res,next)=> {
     const authHeader = req.headers.authorization
@@ -9,7 +9,13 @@ const authMiddleware = (req,res,next)=> {
         })
     }
 
-    const token = authHeader.split(' ')[1]
+    const [scheme, token] = authHeader.split(' ')
+
+    if (scheme !== 'Bearer' || !token) {
+      return res.status(401).json({
+        message: 'Format de token invalide.'
+      })
+    }
 
     try{
         const decodeToken = jwt.verify(token,process.env.JWT_SECRET)
@@ -17,8 +23,7 @@ const authMiddleware = (req,res,next)=> {
         req.user = decodeToken
 
         next()
-    }catch (error){
-        console.log('JWT ERROR:', error.message)
+    }catch {
         return res.status(401).json({
             message:'Token invalide.'
         })

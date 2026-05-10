@@ -10,16 +10,7 @@
       <div class="form-grid">
         <BaseInput id="title" v-model="title" label="Titre" placeholder="Ex : Idées pour le jardin" />
 
-        <div class="form-group">
-          <label for="category">Catégorie</label>
-          <select id="category" v-model="category">
-            <option>Nature</option>
-            <option>Travail</option>
-            <option>Lecture</option>
-            <option>Jardinage</option>
-            <option>Cuisine</option>
-          </select>
-        </div>
+        <BaseInput id="category" v-model="category" label="Catégorie" placeholder="Ex : Voyage, Travail, Journal..." />
 
         <div class="form-group">
           <label for="content">Contenu</label>
@@ -27,7 +18,8 @@
         </div>
       </div>
 
-      <FormMessage :message="message" type="success" />
+      <FormMessage :message="errorMessage" type="error" />
+      <FormMessage :message="successMessage" type="success" />
 
       <div class="actions">
         <RouterLink to="/dashboard" class="back-link">Annuler</RouterLink>
@@ -39,22 +31,43 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import BaseButton from '../components/BaseButton.vue'
 import BaseInput from '../components/BaseInput.vue'
 import FormMessage from '../components/FormMessage.vue'
+import { createObservation, getObservations } from '../services/observationService'
+import { setNotes } from '../stores/notesStore'
 
+const router = useRouter()
 const title = ref('')
-const category = ref('Nature')
+const category = ref('')
 const content = ref('')
-const message = ref('')
+const errorMessage = ref('')
+const successMessage = ref('')
 
-const saveNote = () => {
-  if (!title.value || !content.value) {
-    message.value = ''
+const saveNote = async () => {
+  if (!title.value || !category.value || !content.value) {
+    errorMessage.value = 'Le titre, la catégorie et le contenu sont obligatoires.'
+    successMessage.value = ''
     return
   }
 
-  message.value = 'Note enregistrée localement. Le backend sera reconnecté ensuite.'
+  try {
+    await createObservation({
+      title: title.value,
+      category: category.value,
+      content: content.value
+    })
+
+    const observations = await getObservations()
+    setNotes(observations)
+    errorMessage.value = ''
+    successMessage.value = 'Note créée avec succès.'
+    router.push('/dashboard')
+  } catch (error) {
+    errorMessage.value = error.message
+    successMessage.value = ''
+  }
 }
 </script>
 
@@ -111,7 +124,6 @@ label {
   color: var(--text-strong);
 }
 
-select,
 textarea {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -120,7 +132,6 @@ textarea {
   font: inherit;
 }
 
-select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary);

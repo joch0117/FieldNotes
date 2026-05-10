@@ -21,20 +21,27 @@ import BaseInput from '../components/BaseInput.vue'
 import BaseButton from '../components/BaseButton.vue'
 import FormMessage from '../components/FormMessage.vue'
 import { loginSession } from '../stores/sessionStore'
+import { loginUser } from '../services/userService'
 
 const router = useRouter()
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-const handleLogin = () => {
+const handleLogin = async () => {
   if (!email.value || !password.value) {
     errorMessage.value = 'Tous les champs sont obligatoires.'
     return
   }
 
-  loginSession()
-  router.push('/dashboard')
+  try {
+    const response = await loginUser(email.value, password.value)
+    loginSession({ token: response.token, user: response.user })
+    errorMessage.value = ''
+    router.push({ name: 'dashboard' })
+  } catch (error) {
+    errorMessage.value = error.message
+  }
 }
 </script>
 

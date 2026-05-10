@@ -10,16 +10,7 @@
       <div class="form-grid">
         <BaseInput id="title" v-model="title" label="Titre" />
 
-        <div class="form-group">
-          <label for="category">Catégorie</label>
-          <select id="category" v-model="category">
-            <option>Nature</option>
-            <option>Travail</option>
-            <option>Lecture</option>
-            <option>Jardinage</option>
-            <option>Cuisine</option>
-          </select>
-        </div>
+        <BaseInput id="category" v-model="category" label="Catégorie" placeholder="Ex : Voyage, Travail, Journal..." />
 
         <div class="form-group">
           <label for="content">Contenu</label>
@@ -27,7 +18,8 @@
         </div>
       </div>
 
-      <FormMessage :message="message" type="success" />
+      <FormMessage :message="errorMessage" type="error" />
+      <FormMessage :message="successMessage" type="success" />
 
       <div class="actions">
         <RouterLink :to="`/notes/${note.id}`" class="back-link">Annuler</RouterLink>
@@ -43,35 +35,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseButton from '../components/BaseButton.vue'
 import BaseInput from '../components/BaseInput.vue'
 import FormMessage from '../components/FormMessage.vue'
-import { findNoteById, updateNote } from '../stores/notesStore'
+import { findNoteById, setNotes } from '../stores/notesStore'
+import { getObservations, updateObservation } from '../services/observationService'
 
 const route = useRoute()
 const router = useRouter()
-const note = findNoteById(route.params.id)
+const note = computed(() => findNoteById(route.params.id))
 
 const title = ref(note?.title ?? '')
-const category = ref(note?.category ?? 'Nature')
+const category = ref(note?.category ?? '')
 const content = ref(note?.content ?? '')
-const message = ref('')
+const errorMessage = ref('')
+const successMessage = ref('')
 
-const saveChanges = () => {
-  if (!note || !title.value || !content.value) {
-    message.value = ''
+watch(note, (currentNote) => {
+  title.value = currentNote?.title ?? ''
+  category.value = currentNote?.category ?? ''
+  content.value = currentNote?.content ?? ''
+}, { immediate: true })
+
+onMounted(async () => {
+  if (note.value) return
+
+  try {
+    const observations = await getObservations()
+    setNotes(observations)
+  } catch (error) {
+    errorMessage.value = error.message
+  }
+})
+
+const saveChanges = async () => {
+  if (!note.value || !title.value || !category.value || !content.value) {
+    errorMessage.value = 'Le titre, la catégorie et le contenu sont obligatoires.'
+    successMessage.value = ''
     return
   }
 
-  updateNote(note.id, {
-    title: title.value,
-    category: category.value,
-    content: content.value
-  })
+  try {
+    await updateObservation(note.value.id, {
+      title: title.value,
+      category: category.value,
+      content: content.value
+    })
 
-  router.push(`/notes/${note.id}`)
+    const observations = await getObservations()
+    setNotes(observations)
+    errorMessage.value = ''
+    successMessage.value = 'Note modifiée avec succès.'
+    router.push(`/notes/${note.value.id}`)
+  } catch (error) {
+    errorMessage.value = error.message
+    successMessage.value = ''
+  }
 }
 </script>
 
@@ -128,7 +149,6 @@ label {
   color: var(--text-strong);
 }
 
-select,
 textarea {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -137,7 +157,6 @@ textarea {
   font: inherit;
 }
 
-select:focus,
 textarea:focus {
   outline: none;
   border-color: var(--primary);

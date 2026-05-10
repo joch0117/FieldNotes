@@ -1,4 +1,4 @@
-const observationRepository= require('../repositories/observation.repository')
+﻿const observationRepository= require('../repositories/observation.repository')
 
 
 const validateObservation = (title, category, content, userId) => {
@@ -51,7 +51,7 @@ const deleteObservation = async (id, user_id) =>{
 const foundObservation = async (userId) =>{
     const userObservation = await observationRepository.foundObservationByUser(userId)
 
-    if(!userObservation){
+    if(!userObservation || userObservation.length === 0){
         throw new Error('NO_FOUND_OBSERVATION')
     }
 

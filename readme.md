@@ -1,39 +1,44 @@
 ﻿# FieldNotes
 
-FieldNotes est un projet de pratique full-stack (Vue + Express + MariaDB).
+FieldNotes est une application full-stack de notes personnelles (Vue 3 + Express + MariaDB).
 
-## État actuel (mai 2026)
+## État actuel
 
-Le frontend est refondu et fonctionne en mode local (données mock et état en mémoire), sans dépendance active à l'API backend.
-Le backend existe dans le dépôt et sera branché ensuite côté frontend.
+L'application est branchée au backend pour :
+- authentification (`register`, `login`)
+- observations (`liste`, `création`, `édition`, `suppression`)
+- compte utilisateur (`modification`, `suppression`)
 
 ## Stack
 
 ### Frontend
 - Vue 3
 - Vue Router
-- CSS
 - Vite
+- CSS
 
 ### Backend
 - Node.js
 - Express
 - MariaDB
+- JWT (auth)
 
-## Fonctionnalités front disponibles
+## Fonctionnalités principales
 
-- Page d'accueil
-- Connexion (simulation front)
-- Inscription (simulation front)
-- Dashboard avec recherche et filtres
-- Détail d'une note
-- Création d'une note (locale)
-- Modification d'une note (locale)
-- Suppression d'une note (confirmation inline)
-- Menu déroulant selon statut visiteur/connecté
-- Page "Modifier mon compte"
-- Suppression de compte (simulation front)
+- Inscription et connexion utilisateur
+- Dashboard avec recherche + filtres
+- CRUD notes
+- Détail note avec suppression confirmée inline
+- Compte utilisateur : modifier / supprimer
 - Page CGU
+
+## Sécurité et gestion d'erreurs
+
+- Routes backend sensibles protégées par JWT
+- Guard frontend (`requiresAuth`, `guestOnly`)
+- Déconnexion automatique frontend sur réponse `401`
+- Messages d'erreur API affichés côté interface
+- Validation serveur des champs (auth + observations + compte)
 
 ## Arborescence
 
@@ -41,7 +46,7 @@ Le backend existe dans le dépôt et sera branché ensuite côté frontend.
 - `backend` : API Express
 - `database` : scripts SQL
 - `documentation` : documents projet
-- `figma` : inspirations visuelles
+- `figma` : inspirations UI
 
 ## Lancement rapide
 
@@ -53,15 +58,26 @@ npm run dev
 ```
 
 ### Backend
-Voir la documentation backend dans `backend/readme.md`.
+```bash
+cd backend
+npm install
+npm run dev
+```
 
-## API backend (routes actuelles)
+## Configuration
+
+- Créer votre fichier `.env` à partir de `.env.exemple`.
+- Ne jamais versionner de secrets (`.env` est déjà ignoré par Git).
+
+## API backend (résumé)
 
 ### Auth
 - `POST /api/auth/register`
 - `POST /api/auth/login`
+- `PATCH /api/auth/me` (JWT)
+- `DELETE /api/auth/me` (JWT)
 
-### Observations (protégées JWT)
+### Observations (JWT)
 - `GET /api/observations/`
 - `POST /api/observations/create`
 - `PATCH /api/observations/:id`

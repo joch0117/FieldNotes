@@ -19,6 +19,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { registerUser } from '../services/userService'
 import BaseInput from '../components/BaseInput.vue'
 import BaseButton from '../components/BaseButton.vue'
 import FormMessage from '../components/FormMessage.vue'
@@ -30,16 +31,30 @@ const password = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
 
-const handleRegister = () => {
+const handleRegister = async () => {
   if (!name.value || !email.value || !password.value) {
     errorMessage.value = 'Tous les champs sont obligatoires.'
     successMessage.value = ''
     return
   }
+  try{
+    const result = await registerUser(
+      name.value,
+      email.value,
+      password.value
+    )
 
-  successMessage.value = 'Compte créé avec succès.'
-  errorMessage.value = ''
-  setTimeout(() => router.push('/login'), 600)
+    successMessage.value = result.message
+    errorMessage.value = ''
+
+
+    router.push({ name:'login'})
+
+  }catch(error){
+      errorMessage.value = error.message
+      successMessage.value=''
+  }
+  
 }
 </script>
 
