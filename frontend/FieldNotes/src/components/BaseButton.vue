@@ -1,35 +1,53 @@
-<script setup>
-    defineProps({
-        label:String,
-        type: {
-            type:String,
-            default: 'button'
-        },
-        variant:{
-            type:String,
-            default: 'primary'
-        }
-    })
+﻿<script setup>
+defineProps({
+  label: String,
+  type: {
+    type: String,
+    default: 'button'
+  },
+  variant: {
+    type: String,
+    default: 'primary'
+  },
+  block: {
+    type: Boolean,
+    default: false
+  }
+})
 </script>
 
 <template>
-    <button :type="type" :class="['base-button', variant]">
-        {{ label }}
-    </button>
+  <button :type="type" :class="['base-button', `is-${variant}`, { 'is-block': block }]">
+    {{ label }}
+  </button>
 </template>
+
 <style scoped>
-    .base-button {
-        padding: 0.75rem 1rem;
-        border:none;
-        border-radius:8px;
-        cursor:pointer;
-    }
-    .primary{
-        background: #3f6d5a;
-        color: white;
-    }
-    .secondary{
-        background: #e8e5de;
-        color:#222;
-    }
+.base-button {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.is-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.is-secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-strong);
+}
+
+.is-block {
+  width: 100%;
+}
+
+.base-button:hover {
+  transform: translateY(-1px);
+}
 </style>
+

@@ -1,65 +1,66 @@
-<script setup>
+﻿<script setup>
+import { CalendarDays, Tag } from 'lucide-vue-next'
+
 defineProps({
+  id: Number,
   title: String,
   excerpt: String,
   category: String,
   date: String
 })
+
+const formatDate = (date) => new Date(date).toLocaleDateString('fr-FR')
 </script>
 
 <template>
-  <article class="note-card">
-    <div class="note-card-content">
+  <RouterLink :to="{ name: 'noteDetail', params: { id } }" class="note-card-link">
+    <article class="note-card">
       <h3>{{ title }}</h3>
       <p>{{ excerpt }}</p>
-    </div>
-
-    <div class="note-card-footer">
-      <span class="meta-item">🏷 {{ category }}</span>
-      <span class="meta-item">📅 {{ date }}</span>
-    </div>
-  </article>
+      <footer>
+        <span><Tag :size="14" /> {{ category }}</span>
+        <span><CalendarDays :size="14" /> {{ formatDate(date) }}</span>
+      </footer>
+    </article>
+  </RouterLink>
 </template>
 
 <style scoped>
+.note-card-link {
+  text-decoration: none;
+}
+
 .note-card {
-  min-height: 165px;
-  padding: 1.4rem;
-  border: 1px solid #ded8cf;
-  border-radius: 10px;
-  background: #fffdfa;
+  height: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  background: var(--surface);
+  display: grid;
+  gap: 0.9rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
 
+.note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.note-card p {
+  color: var(--text);
+}
+
+.note-card footer {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.note-card-content h3 {
-  margin: 0 0 0.9rem;
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #25201b;
-}
-
-.note-card-content p {
-  margin: 0;
-  color: #67615b;
-  line-height: 1.45;
-  font-size: 0.95rem;
-}
-
-.note-card-footer {
-  display: flex;
-  align-items: center;
   gap: 1rem;
-  margin-top: 1.4rem;
+  color: var(--text-soft);
   font-size: 0.85rem;
-  color: #716b64;
 }
 
-.meta-item {
+.note-card footer span {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.35rem;
 }
 </style>
+

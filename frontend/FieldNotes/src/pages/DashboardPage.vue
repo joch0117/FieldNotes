@@ -1,149 +1,112 @@
-<template>
-    <section class="hero-dashboard">
-    <div>
+﻿<template>
+  <section class="dashboard-page">
+    <header class="dashboard-head">
+      <div>
         <h1>Mes notes</h1>
         <p>{{ filteredNotes.length }} notes trouvées</p>
+      </div>
+      <RouterLink to="/notes/new"><BaseButton label="+ Ajouter une note" /></RouterLink>
+    </header>
+
+    <SearchBar v-model="searchTerm" placeholder="Rechercher une note..." />
+
+    <div class="filter-list">
+      <button
+        v-for="item in categories"
+        :key="item"
+        type="button"
+        :class="['chip', { 'is-active': selectedCategory === item }]"
+        @click="selectedCategory = item"
+      >
+        {{ item }}
+      </button>
     </div>
 
-    <RouterLink to="/newNote">
-        <BaseButton label="nouvelle note" type="submit" />
-    </RouterLink>
+    <section class="notes-grid">
+      <NoteCard
+        v-for="note in filteredNotes"
+        :key="note.id"
+        :id="note.id"
+        :title="note.title"
+        :excerpt="note.content"
+        :category="note.category"
+        :date="note.createdAt"
+      />
     </section>
-
-    <section class="hero-search">
-        <div class="search-wrapper">
-            <SearchBar
-            v-model="searchTerm"
-            placeholder="Rechercher une note..."
-            />
-        </div>
-
-    <div class="badges-list">
-        <Badge
-        v-for="category in categories"
-        :key="category"
-        :label="category"
-        :active="selectedCategory === category"
-        @click="selectedCategory = category"
-        />
-    </div>
-    </section>
-
-    <section class="notes-list">
-    <div v-if="filteredNotes.length === 0" class="empty-state">
-        <p>Aucune note trouvée.</p>
-    </div>
-    <section class="notes-section">
-  <div class="notes-grid">
-    <NoteCard
-      v-for="note in filteredNotes"
-      :key="note.id"
-      :title="note.title"
-      :excerpt="note.excerpt"
-      :category="note.category"
-      :date="note.date"
-    />
-  </div>
-</section>
-    </section>
+  </section>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
+import { notesState } from '../stores/notesStore'
 import BaseButton from '../components/BaseButton.vue'
-import SearchBar from '../components/SearchBar.vue'
-import Badge from '../components/Badge.vue'
 import NoteCard from '../components/NoteCard.vue'
+import SearchBar from '../components/SearchBar.vue'
 
-const notes = ref([
-  {
-    id: 1,
-    title: 'Spring Wildflowers Observation',
-    excerpt: 'Observed several species of wildflowers blooming near the creek. The Indian Paintbrush was particularly vibrant this year...',
-    category: 'Nature',
-    date: '10/04/2026'
-  },
-  {
-    id: 2,
-    title: 'Project Planning Notes',
-    excerpt: 'Initial thoughts on the Q2 roadmap. Need to prioritize user feedback and address technical debt...',
-    category: 'Work',
-    date: '12/04/2026'
-  }
-])
-
-const selectedCategory = ref('Toutes')
 const searchTerm = ref('')
+const selectedCategory = ref('Toutes')
 
-const categories = computed(() => {
-  const uniqueCategories = [...new Set(notes.value.map(note => note.category))]
-  return ['Toutes', ...uniqueCategories]
-})
+const categories = computed(() => ['Toutes', ...new Set(notesState.notes.map((note) => note.category))])
 
 const filteredNotes = computed(() => {
-  return notes.value.filter(note => {
-    const matchesSearch = note.title
-      .toLowerCase()
-      .includes(searchTerm.value.toLowerCase())
+  const term = searchTerm.value.toLowerCase().trim()
 
-    const matchesCategory =
-      selectedCategory.value === 'Toutes' ||
-      note.category === selectedCategory.value
-
-    return matchesSearch && matchesCategory
+  return notesState.notes.filter((note) => {
+    const byCategory = selectedCategory.value === 'Toutes' || note.category === selectedCategory.value
+    const byText = !term || note.title.toLowerCase().includes(term) || note.content.toLowerCase().includes(term)
+    return byCategory && byText
   })
 })
 </script>
 
 <style scoped>
-.hero-dashboard {
+.dashboard-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.dashboard-head {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
-  padding: 0 0 50px 0;
-}
-
-.hero-search {
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
-  padding-bottom: 2rem;
 }
 
-.search-wrapper {
-  width: 100%;
+.dashboard-head p {
+  color: var(--text-soft);
 }
 
-.badges-list {
+.filter-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.6rem;
 }
 
-.notes-section {
-  margin-top: 2rem;
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 10px;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.is-active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
 }
 
 .notes-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.4rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
 }
 
-.empty-state {
-  padding: 2rem 0;
-  text-align: center;
-  color: #666;
-}
-@media (max-width: 900px) {
-  .notes-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 650px) {
-  .notes-grid {
-    grid-template-columns: 1fr;
+@media (max-width: 640px) {
+  .dashboard-head {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }
 </style>
+

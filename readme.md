@@ -1,61 +1,68 @@
-# Projet FieldNotes
+﻿# FieldNotes
 
-Ce projet a pour bute de pratiquer le framework vue  ainsi que express avec node.js
+FieldNotes est un projet de pratique full-stack (Vue + Express + MariaDB).
 
-# description
+## État actuel (mai 2026)
 
-FieldNotes est une application web full-stack permettant à un utilisateur de créer un compte, se connecter et gérer ses propres observations sous forme de fiches.
+Le frontend est refondu et fonctionne en mode local (données mock et état en mémoire), sans dépendance active à l'API backend.
+Le backend existe dans le dépôt et sera branché ensuite côté frontend.
 
-Chaque utilisateur peut créer, consulter, modifier et supprimer des observations personnelles, classées par catégorie. L’application propose une interface simple pour organiser ses idées, notes de lecture, observations de terrain ou expériences.
+## Stack
 
-Le projet repose sur une architecture séparée :
+### Frontend
+- Vue 3
+- Vue Router
+- CSS
+- Vite
 
-un frontend en Vue.js avec navigation via Vue Router
-un backend en Node.js avec Express exposant une API REST
-une base de données relationnelle pour stocker les utilisateurs et leurs observations
-
-L’authentification est sécurisée (mot de passe hashé) et chaque utilisateur n’a accès qu’à ses propres données.
-
-Ce projet a pour objectif de mettre en pratique les fondamentaux du développement web full-stack : gestion des utilisateurs, CRUD, communication frontend/backend, structuration d’une application et sécurisation des données.
-
-## stack
-### côté front
-- Vue.js
-- CSS 3
-
-## côté back
-- express
-- prisa
-
-## BDD
+### Backend
+- Node.js
+- Express
 - MariaDB
 
-## conteneur docker
-- NGINX
-- MariaDB
-- back
-- front
+## Fonctionnalités front disponibles
 
-## Page du site 
+- Page d'accueil
+- Connexion (simulation front)
+- Inscription (simulation front)
+- Dashboard avec recherche et filtres
+- Détail d'une note
+- Création d'une note (locale)
+- Modification d'une note (locale)
+- Suppression d'une note (confirmation inline)
+- Menu déroulant selon statut visiteur/connecté
+- Page "Modifier mon compte"
+- Suppression de compte (simulation front)
+- Page CGU
 
-- Acceuil
-- register
-- login
-- dashboard
-- nouvelle note
-- edit note
-- detail note
-- CGU
+## Arborescence
 
-## Route de l'API (documentation compléte dans  /backend/readme.md)
+- `frontend/FieldNotes` : application Vue
+- `backend` : API Express
+- `database` : scripts SQL
+- `documentation` : documents projet
+- `figma` : inspirations visuelles
 
-# USER
-- api/auth/register  **enregistrement d'un nouvelle utilisateur**
-- api/auth/login **connexion utilisateur génération token JWT**
+## Lancement rapide
 
-# observations route protégé par JWT
+### Frontend
+```bash
+cd frontend/FieldNotes
+npm install
+npm run dev
+```
 
-- get api/observations/ **récupére les observations de l'utilisateur  authentifié**
-- post api/observations/create **créer une nouvelle observation**
-- delete api/observations/:id **suprime une observation**
-- patch api/observations/:id **modifie une observation**
+### Backend
+Voir la documentation backend dans `backend/readme.md`.
+
+## API backend (routes actuelles)
+
+### Auth
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+
+### Observations (protégées JWT)
+- `GET /api/observations/`
+- `POST /api/observations/create`
+- `PATCH /api/observations/:id`
+- `DELETE /api/observations/:id`

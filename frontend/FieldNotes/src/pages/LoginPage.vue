@@ -1,134 +1,68 @@
-<template>
-<section class="login-page">
-    <div class="login-card">
-    <div class="form-icon">
-        <LogInIcon :size="26"/>
-    </div>
-    <h3>Se connecter</h3>
-    <p>Connectez-vous pour accéder à vos notes.</p>
-    <form class="login-form" @submit.prevent="handleLogin">
-        <BaseInput
-        label="Email"
-        id="email"
-        name="email"
-        type="email"
-        v-model="email" 
-        />
-        <BaseInput
-        label="Mot de passe"
-        id="password"
-        name="password"
-        type="password"
-        v-model="password" 
-        />
+﻿<template>
+  <section class="auth-page">
+    <div class="auth-card">
+      <h1>Se connecter</h1>
+      <p>Accédez à votre espace de notes.</p>
+      <form class="auth-form" @submit.prevent="handleLogin">
+        <BaseInput id="email" v-model="email" label="Email" type="email" placeholder="vous@exemple.com" />
+        <BaseInput id="password" v-model="password" label="Mot de passe" type="password" placeholder="••••••••" />
         <FormMessage :message="errorMessage" type="error" />
-        <FormMessage :message="successMessage" type="success" />
-        <BaseButton label="se connecter" type="submit" />
-        <p class="auth-switch">
-        Pas encore de compte ?
-        <RouterLink to="/register">Inscrivez-vous</RouterLink>
-</p>
-    </form>
+        <BaseButton label="Connexion" type="submit" block />
+      </form>
+      <p class="switch">Pas encore de compte ? <RouterLink to="/register">Créer un compte</RouterLink></p>
     </div>
-</section>
+  </section>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import BaseInput from '../components/BaseInput.vue'
+import BaseButton from '../components/BaseButton.vue'
+import FormMessage from '../components/FormMessage.vue'
+import { loginSession } from '../stores/sessionStore'
+
+const router = useRouter()
+const email = ref('')
+const password = ref('')
+const errorMessage = ref('')
+
+const handleLogin = () => {
+  if (!email.value || !password.value) {
+    errorMessage.value = 'Tous les champs sont obligatoires.'
+    return
+  }
+
+  loginSession()
+  router.push('/dashboard')
+}
+</script>
+
 <style scoped>
-.login-page {
-    min-height: calc(100vh - 140px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
+.auth-page {
+  min-height: 65vh;
+  display: grid;
+  place-items: center;
 }
 
-.login-card {
-    width: 100%;
-    max-width: 420px;
-    background-color: #ffffff;
-    border: 1px solid #e5e2dc;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    padding: 2rem;
-    text-align: center;
+.auth-card {
+  width: min(100%, 430px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 1.8rem;
+  display: grid;
+  gap: 1rem;
 }
 
-.form-icon {
-    width: 64px;
-    height: 64px;
-    margin: 0 auto 1.25rem;
-    border-radius: 50%;
-    background-color: #e8e5de;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4f6f5f;
+.auth-form {
+  display: grid;
+  gap: 1rem;
 }
 
-h1 {
-    margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-}
-
-p {
-    margin-bottom: 1.5rem;
-    color: #5f5f5f;
-}
-
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-.auth-switch {
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    text-align: center;
-}
-
-.auth-switch a {
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.auth-switch a:hover {
-    text-decoration: underline;
+.switch {
+  color: var(--text-soft);
+  font-size: 0.92rem;
 }
 </style>
-<script setup>
-    import { LogInIcon } from 'lucide-vue-next'
-    import BaseButton from '../components/BaseButton.vue'
-    import BaseInput from '../components/BaseInput.vue'
-    import FormMessage from '../components/FormMessage.vue'
-    import { loginUser } from '../services/auth'
-    import {ref} from 'vue'
-    import { useRouter } from 'vue-router'
-    
-    const router =  useRouter()
-
-    const errorMessage = ref('')
-    const successMessage = ref('')
-    const email = ref('')
-    const password = ref('')
-
-    const handleLogin = async()=>{
-        
-        if (!email.value || !password.value){
-            error.value = "Tous les champs sont obligatoires"
-            return
-        }
-        
-        try{
-            await loginUser(
-                {
-                    email: email.value,
-                    password: password.value
-                }
-            )
-            successMessage.value = "connexion réussie"
-            router.push('/dashboard')
-        }catch(error){
-            console.log(error)
-            errorMessage.value = error.message
-        }
-    }
-</script>

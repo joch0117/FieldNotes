@@ -1,39 +1,33 @@
-<template>
-    <div class="card">
-        <h3>{{ title }}</h3>
-        <p>{{ text }}</p>
-    </div>
-</template>
-
-<script setup>
+﻿<script setup>
 defineProps({
-    title: String,
-    text: String
+  title: String,
+  text: String
 })
 </script>
 
+<template>
+  <article class="card">
+    <h3>{{ title }}</h3>
+    <p>{{ text }}</p>
+  </article>
+</template>
+
 <style scoped>
 .card {
-    background-color: #ffffff;
-    border: 1px solid #e5e2dc;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    width: 240px;
-    padding: 1.5rem 1rem;
-    text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: 1.2rem;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(40, 30, 18, 0.05);
 }
 
-.card h3 {
-    margin: 0 0 1rem 0;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    color: #2c2c2c;
+h3 {
+  margin-bottom: 0.55rem;
 }
 
-.card p {
-    margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
-    color: #6b6b6b;
+p {
+  color: var(--text-soft);
 }
 </style>
+

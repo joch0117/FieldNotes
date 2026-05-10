@@ -1,14 +1,14 @@
 ﻿<template>
-  <section class="editor-page">
-    <form class="editor-card" @submit.prevent="saveNote">
+  <section v-if="note" class="editor-page">
+    <form class="editor-card" @submit.prevent="saveChanges">
       <header class="editor-head">
-        <p class="eyebrow">Création</p>
-        <h1>Nouvelle note</h1>
-        <p>Ajoute une nouvelle note dans ton espace.</p>
+        <p class="eyebrow">Édition</p>
+        <h1>Modifier la note</h1>
+        <p>Met à jour les informations de ta note.</p>
       </header>
 
       <div class="form-grid">
-        <BaseInput id="title" v-model="title" label="Titre" placeholder="Ex : Idées pour le jardin" />
+        <BaseInput id="title" v-model="title" label="Titre" />
 
         <div class="form-group">
           <label for="category">Catégorie</label>
@@ -23,38 +23,55 @@
 
         <div class="form-group">
           <label for="content">Contenu</label>
-          <textarea id="content" v-model="content" rows="8" placeholder="Décris ton observation..."></textarea>
+          <textarea id="content" v-model="content" rows="8" placeholder="Mets à jour le contenu de la note..."></textarea>
         </div>
       </div>
 
       <FormMessage :message="message" type="success" />
 
       <div class="actions">
-        <RouterLink to="/dashboard" class="back-link">Annuler</RouterLink>
-        <BaseButton label="Enregistrer" type="submit" />
+        <RouterLink :to="`/notes/${note.id}`" class="back-link">Annuler</RouterLink>
+        <BaseButton label="Enregistrer les modifications" type="submit" />
       </div>
     </form>
+  </section>
+
+  <section v-else class="detail-empty">
+    <h1>Note introuvable</h1>
+    <RouterLink to="/dashboard">Revenir à la liste</RouterLink>
   </section>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import BaseButton from '../components/BaseButton.vue'
 import BaseInput from '../components/BaseInput.vue'
 import FormMessage from '../components/FormMessage.vue'
+import { findNoteById, updateNote } from '../stores/notesStore'
 
-const title = ref('')
-const category = ref('Nature')
-const content = ref('')
+const route = useRoute()
+const router = useRouter()
+const note = findNoteById(route.params.id)
+
+const title = ref(note?.title ?? '')
+const category = ref(note?.category ?? 'Nature')
+const content = ref(note?.content ?? '')
 const message = ref('')
 
-const saveNote = () => {
-  if (!title.value || !content.value) {
+const saveChanges = () => {
+  if (!note || !title.value || !content.value) {
     message.value = ''
     return
   }
 
-  message.value = 'Note enregistrée localement. Le backend sera reconnecté ensuite.'
+  updateNote(note.id, {
+    title: title.value,
+    category: category.value,
+    content: content.value
+  })
+
+  router.push(`/notes/${note.id}`)
 }
 </script>
 
